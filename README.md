@@ -43,9 +43,9 @@ Run the main.py or you can rewrite the code to achieve your own logic.
     print('[Finished]:',datetime.now())
     
     
- 		if __name__ == "__main__":
-    		# main(1)
-    		run()
+    if __name__ == "__main__":
+        # main(1)
+        run()
 
 ```
 
