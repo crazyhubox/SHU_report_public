@@ -11,6 +11,11 @@ This project make it valid to report on your own server all the time.
 At first you need to install the redis on the server, which can make you easier to
 add a new account from your localhost(Use the redis manager and your local PC unnecessarily install the redis-DB).
 
+Do not forget to config your own redis-server in the **getUserFromRedis.py**
+```python
+rdb = Redis()
+```
+
 I use the Another Redis DeskTop Manager.https://github.com/qishibo/AnotherRedisDesktopManager
 
 ![image](imgs/Snipaste_2020-12-27_09-27-16.png)
