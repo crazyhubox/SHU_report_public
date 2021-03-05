@@ -1,53 +1,55 @@
-# SHU_report_public
-This project make it valid to report on your own server all the time.
+# SHU_REPOT_GO
+Go语言实现的上海大学每日一报项目, 摆脱selenium纯api封装, 
+错误自动发送邮件通知
+## 项目结构
+```
+SHU_report_public
 
-
-## Packages
-1. pyppeteer
-2. requests
-3. redis
-
-## HowToGo
-At first you need to install the redis on the server, which can make you easier to
-add a new account from your localhost(Use the redis manager and your local PC unnecessarily install the redis-DB).
-
-Do not forget to config your own redis-server in the **getUserFromRedis.py**
-```python
-rdb = Redis()
+├── go.mod
+├── go.sum
+├── mail
+│   └── main.go
+├── main.go
+├── parseSetting
+│   └── main.go
+├── readme.md
+├── report
+│   ├── report.go
+│   └── report_test.go
+└── setting.json
 ```
 
-I use the Another Redis DeskTop Manager.https://github.com/qishibo/AnotherRedisDesktopManager
+## 使用方法
 
-![image](imgs/Snipaste_2020-12-27_09-27-16.png)
+1. 安装golang环境
 
-Run the main.py or you can rewrite the code to achieve your own logic.
+安装初始化项目
 
-```python
-    for user, passw in accounts.items():
-        print('[INFO]:',user)
-        cookie_obj.setUserInfo(username=user,password=passw)
-
-        cookies = cookie_obj.cookies()
-        view_state = cookie_obj.viewstate()
-
-        req_obj.setUserInfo(cookies,view_state)
-        reporter.setRequester(req_obj)
-    		# To do report from start date to present.
-        # reporter.PreviousReport('2020-12-20')
-        if t:
-            reporter.SunReport(today)
-        else:
-            reporter.MoonRepot(today)
-        print('='*100)
-        sleep(3)
-    print('[Finished]:',datetime.now())
-    
-    
-    if __name__ == "__main__":
-        # main(1)
-        run()
-
+``` shell
+go mod tidy
+go mod download
+go mod vendor
 ```
 
+2. 配置setting.json
 
+``` json
+{
+    "mail":{
+        "sender":"qq邮箱@qq.com",
+        "receivers":["qq邮箱@qq.com"],
+        "authorization_code":"邮箱授权码"
+    },
+    "report_info":{
+        "stu_num":"学号",
+        "password":"密码"
+    },
+    "runtime_cron":"30 6 * * */1 这个表示每天的6点半执行,去掉中文"
+}
+```
 
+3. 运行项目
+
+``` 
+go run main.go
+```

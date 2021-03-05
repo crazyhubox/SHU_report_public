@@ -1,0 +1,12 @@
+{
+    "mail":{
+        "sender":"qq邮箱@qq.com",
+        "receivers":["qq邮箱@qq.com"],
+        "authorization_code":"邮箱授权码"
+    },
+    "report_info":{
+        "stu_num":"学号",
+        "password":"密码"
+    },
+    "runtime_cron":"30 6 * * */1 这个表示每天的6点半执行,去掉中文"
+}
