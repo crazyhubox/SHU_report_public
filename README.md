@@ -8,18 +8,22 @@ Go语言实现的上海大学每日一报项目, 摆脱selenium纯api封装,
 ## 项目结构
 ```
 SHU_report_public
-
+│
 ├── go.mod
 ├── go.sum
+│
 ├── mail
 │   └── main.go
-├── main.go
+│
 ├── parseSetting
 │   └── main.go
-├── readme.md
+│
 ├── report
 │   ├── report.go
 │   └── report_test.go
+│
+├── main.go
+├── readme.md
 └── setting.json
 ```
 
