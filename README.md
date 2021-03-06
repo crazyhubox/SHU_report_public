@@ -1,4 +1,8 @@
 # SHU_REPOT_GO
+
+![avatar](https://img.shields.io/badge/Async-Yes-red)
+![avatar](https://img.shields.io/badge/Configuration-Yes-green)
+
 Go语言实现的上海大学每日一报项目, 摆脱selenium纯api封装, 
 错误自动发送邮件通知
 ## 项目结构
