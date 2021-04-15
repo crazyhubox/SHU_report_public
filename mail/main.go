@@ -10,12 +10,12 @@ import (
 go邮件发送
 */
 
-func SendMail(sender,authorization string,mailTo []string, subject string, body string) error {
+func SendMail(sender, authorization string, mailTo []string, subject string, body string) error {
 	// 设置邮箱主体
 	mailConn := map[string]string{
-		"user": sender, //发送人邮箱（邮箱以自己的为准）
+		"user": sender,        //发送人邮箱（邮箱以自己的为准）
 		"pass": authorization, //发送人邮箱授权码 开启授权密码后在pass填写授权码
-		"host": "smtp.qq.com",      //邮箱服务器（此时用的是qq邮箱）
+		"host": "smtp.qq.com", //邮箱服务器（此时用的是qq邮箱）
 	}
 
 	m := gomail.NewMessage(
@@ -45,6 +45,6 @@ func SendErro(info string, trac string, setting parseSetting.Setting) error {
 	subject := info // 邮件主题
 	body := trac    // 邮件正文
 
-	err := SendMail(setting.Mail.Sender,setting.Mail.AuthorizationCode,mailTo, subject, body)
+	err := SendMail(setting.Mail.Sender, setting.Mail.AuthorizationCode, mailTo, subject, body)
 	return err
 }

@@ -17,7 +17,7 @@ func main() {
 		panic("Error on loading Settings.")
 	}
 	defer sendError(settings)
-
+	// 以上是异常处理
 	c := cron.New()
 	c.AddFunc(settings.RuntimeCron, func() {
 		// 这里需要重复写
@@ -32,6 +32,7 @@ func main() {
 	})
 	// 每天自动报送
 	c.Start()
+
 	select {}
 }
 

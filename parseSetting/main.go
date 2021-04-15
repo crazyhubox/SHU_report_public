@@ -1,4 +1,4 @@
-package main
+package parseSetting
 
 import (
 	"encoding/json"
