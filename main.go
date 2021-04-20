@@ -72,9 +72,10 @@ func testError() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	reporter := new(report.VocationReport)
-	reporter.Init()
-	reporter.GetCookies(settings.ReportInfo.StuNum, settings.ReportInfo.Password)
-	reporter.GetViewState()
-	reporter.Report()
+	var sig_repoter *report.BrowReport = new(report.BrowReport)
+	everdayReport(sig_repoter, settings)
+}
+
+func main() {
+	signal_report()
 }
