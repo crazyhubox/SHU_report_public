@@ -4,7 +4,7 @@
 ![avatar](https://img.shields.io/badge/Configuration-Yes-green)
 ![avatar](https://img.shields.io/badge/license-MIT-blue)
 
-Go语言实现的上海大学每日一报项目, 摆脱selenium纯api封装,
+Go语言实现的上海大学每日一报项目, 摆脱selenium纯api封装, 
 错误自动发送邮件通知
 ## 项目结构
 ```
@@ -19,6 +19,9 @@ SHU_report_public
 ├── parseSetting
 │   └── main.go
 │
+├── shu_f
+│   └── server.py
+│
 ├── report
 │   ├── report.go
 │   └── report_test.go
@@ -28,7 +31,30 @@ SHU_report_public
 └── setting.json
 ```
 
-## 使用方法
+## 更新改动
+使用了CS架构 python(fastapi+pyppeteer) + golang的结构
+
+但是这样的话还不如直接完全使用python实现来得方便
+
+## 启动方法(新)
+先启动server
+```python
+# 在shu_f文件夹下的server, 用于获取cookie
+if __name__ == '__main__':
+    uvicorn.run(app, host="0.0.0.0", port=8989)
+
+# 启动完成之后, 需要在终端下使用curl 127.0.0.1:8989/init来完成browser的装载进入内存
+# 服务器基本都是靠终端交互, 要避免浏览器被杀进程,这部分比较麻烦, 后续更新解决方案, 感兴趣的朋友可以自己动手尝试
+```
+然后启动client, 负责定时报送和发送错误邮件, 注意自己的路径
+```shell
+go run "./main.go" 
+```
+## ios快捷指令来查看服务和报送状态
+ios可以通过快捷指令来快捷查看报送状态
+
+
+## 使用方法(旧版本)
 
 1. 安装golang环境
 
