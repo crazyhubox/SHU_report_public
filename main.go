@@ -5,40 +5,25 @@ import (
 	"SHU/parseSetting"
 	"SHU/report"
 	"fmt"
-	"log"
 	"runtime/debug"
-
-	"github.com/robfig/cron/v3"
+	"strings"
+	"time"
 )
 
-func main() {
-	settings, err := parseSetting.GetSettings()
-	if err != nil {
-		panic("Error on loading Settings.")
-	}
-	defer sendError(settings)
-	// 以上是异常处理
-	c := cron.New()
-	c.AddFunc(settings.RuntimeCron, func() {
-		// 这里需要重复写
-		// 因为cron是新开了一个go程,如果这个go程中出错信息将无法进入主线程
-		// 而且每次执行都重新加载配置,就可以不用关闭程序来修改配置了
-		settings, err := parseSetting.GetSettings()
-		if err != nil {
-			panic("Error on loading Settings.")
-		}
-		defer sendError(settings)
-		everdayReport(settings)
-	})
-	// 每天自动报送
-	c.Start()
+func checkTime(settings parseSetting.Setting) bool {
+	t := time.Now()
+	second := t.Second()
+	hour := t.Hour()
+	min := t.Minute()
+	currentTime := fmt.Sprintf("%02d:%02d:%02d", hour, min, second)
 
-	select {}
+	setting_time := settings.RuntimeCron
+	s_t := strings.Split(setting_time, " ")
+	setting_time = fmt.Sprintf("%02s:%02s:00", s_t[1], s_t[0])
+	fmt.Println(currentTime,setting_time)
+	return currentTime == setting_time
 }
 
-func everdayReport(settings parseSetting.Setting) {
-	report.VocationReportRun(settings.ReportInfo.StuNum, settings.ReportInfo.Password)
-}
 
 func sendError(settings parseSetting.Setting) {
 	// 这个函数负责异常处理
@@ -59,23 +44,31 @@ func sendError(settings parseSetting.Setting) {
 		return
 	}
 	fmt.Println("Send successfully!")
-
 }
 
-func test(u, p string) {
-	report.VocationReportRun(u, p)
-}
 
-func testError() {
-	settings, err := parseSetting.GetSettings()
-	settings.ReportInfo.Password = ""
-	if err != nil {
-		log.Fatalln(err)
+func everdayReport(reporter report.Reporter, settings parseSetting.Setting) {
+	defer sendError(settings)
+	for {
+		settings, err := parseSetting.GetSettings()
+		if err != nil {
+			panic("Error on loading Settings.")
+		}
+
+		if checkTime(settings) {
+			reporter.Report(settings.ReportInfo.StuNum, settings.ReportInfo.Password)
+		}
+		time.Sleep(time.Second)
 	}
-	var sig_repoter *report.BrowReport = new(report.BrowReport)
-	everdayReport(sig_repoter, settings)
 }
+
 
 func main() {
-	signal_report()
+	settings, err := parseSetting.GetSettings()
+	if err != nil {
+		panic("Error on loading Settings.")
+	}
+	
+	var reporter report.Reporter = new(report.BrowReport)
+	everdayReport(reporter,settings)
 }

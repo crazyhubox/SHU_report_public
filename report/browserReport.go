@@ -47,3 +47,4 @@ func (b *BrowReport) GetCookies(username, password string) {
 	json.Unmarshal(bodyText, &cookieData)
 	b.cookies = fmt.Sprintf("%s=%s", cookieData.Name, cookieData.Value)
 	fmt.Println(b.cookies)
+}
