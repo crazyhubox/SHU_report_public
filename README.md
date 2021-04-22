@@ -32,11 +32,15 @@ SHU_report_public
 ```
 
 ## 更新改动
+(21-4-22更):
+pyppeteer 现在只负责js加密部分的运行, 依旧保持CS架构, 但是现在无头浏览器只负责运行js, 其他请求全部代码实现, 性能和稳定性较快.
+
+(21-4-21更):
 使用了CS架构 python(fastapi+pyppeteer) + golang的结构
 
 但是这样的话还不如直接完全使用python实现来得方便
 
-## 启动方法(新)
+## 启动方法(目前启动部署比较麻烦了, 就不更了)
 先启动server
 ```python
 # 在shu_f文件夹下的server, 用于获取cookie
@@ -50,6 +54,7 @@ if __name__ == '__main__':
 ```shell
 go run "./main.go" 
 ```
+
 ## ios快捷指令来查看服务和报送状态
 ios可以通过快捷指令来快捷查看报送状态
 
@@ -88,3 +93,4 @@ go mod vendor
 ``` 
 go run main.go
 ```
+
