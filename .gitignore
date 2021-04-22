@@ -133,3 +133,6 @@ dmypy.json
 .DS_Store
 vendor
 main
+js_test
+test_go
+SC_report

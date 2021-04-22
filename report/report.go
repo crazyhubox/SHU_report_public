@@ -14,32 +14,40 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+type Reporter interface {
+	//默认就是应用类型
+	Report(string, string)
+}
+
 type ApiReport struct {
 	client    *http.Client
+	cookier   CookieGenerator
 	viewstate string
 	cookies   string
 }
 
-type cookie struct {
-	Name     string `json:"name"`
-	Value    string `json:"value"`
-	Domain   string `json:"domain"`
-	Path     string `json:"path"`
-	Expires  int64  `json:"expires"`
-	Size     int64  `json:"size"`
-	HTTPOnly bool   `json:"httpOnly"`
-	Secure   bool   `json:"secure"`
-	Session  bool   `json:"session"`
+//Cookie generator
+type CookieGenerator interface {
+	GetCookies(*http.Client, string, string) string
 }
 
+
+func NewApiReporter() *ApiReport {
+	var reporter *ApiReport = new(ApiReport) //接口类型默认就是应用类型, 但是结构体不是,  new创建的是一个指针, 这里需要注意
+	reporter.cookier = new(remoteCookie)
+	reporter.init()
+
+	return reporter
+}
+
+
 func (r *ApiReport) Report(uid, password string) {
-	r.Init()
 	r.GetCookies(uid, password)
 	r.GetViewState()
 	r.Submit()
 }
 
-func (r *ApiReport) Init() {
+func (r *ApiReport) init() {
 	testCookieJar, _ := cookiejar.New(nil)
 	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
@@ -59,42 +67,9 @@ func (r *ApiReport) Init() {
 
 func (r *ApiReport) GetCookies(uid, password string) {
 	//这里放账号和密码，代码可以自己重构，现在这个可能有点难看，哈哈
-	fmt.Println("获取账号cookies")
-	dataStr := fmt.Sprintf(`username=%s&password=%s&login_submit=`, uid, password)
-	var data = strings.NewReader(dataStr)
-	req, err := http.NewRequest("POST", "https://newsso.shu.edu.cn/login/eyJ0aW1lc3RhbXAiOjE2MTIzNTY1Mzk3NDA0MjQ4OTUsInJlc3BvbnNlVHlwZSI6ImNvZGUiLCJjbGllbnRJZCI6IldVSFdmcm50bldZSFpmelE1UXZYVUNWeSIsInNjb3BlIjoiMSIsInJlZGlyZWN0VXJpIjoiaHR0cHM6Ly9zZWxmcmVwb3J0LnNodS5lZHUuY24vTG9naW5TU08uYXNweD9SZXR1cm5Vcmw9JTJmRGVmYXVsdC5hc3B4Iiwic3RhdGUiOiIifQ==", data)
-	if err != nil {
-		log.Fatal(err)
-	}
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Cache-Control", "max-age=0")
-	req.Header.Set("Upgrade-Insecure-Requests", "1")
-	req.Header.Set("Origin", "https://newsso.shu.edu.cn")
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36 Edg/88.0.705.56")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-	req.Header.Set("Sec-Fetch-Site", "same-origin")
-	req.Header.Set("Sec-Fetch-Mode", "navigate")
-	req.Header.Set("Sec-Fetch-User", "?1")
-	req.Header.Set("Sec-Fetch-Dest", "document")
-	req.Header.Set("Referer", "https://newsso.shu.edu.cn/login/eyJ0aW1lc3RhbXAiOjE2MTIzNTY1Mzk3NDA0MjQ4OTUsInJlc3BvbnNlVHlwZSI6ImNvZGUiLCJjbGllbnRJZCI6IldVSFdmcm50bldZSFpmelE1UXZYVUNWeSIsInNjb3BlIjoiMSIsInJlZGlyZWN0VXJpIjoiaHR0cHM6Ly9zZWxmcmVwb3J0LnNodS5lZHUuY24vTG9naW5TU08uYXNweD9SZXR1cm5Vcmw9JTJmRGVmYXVsdC5hc3B4Iiwic3RhdGUiOiIifQ==")
-	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6")
-	resp, err := r.client.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	cookie := resp.Cookies()
-	// fmt.Println(cookie)
-	for _, v := range cookie {
-		fmt.Println(v.Name)
-		if v.Name == ".ncov2019selfreport" {
-			r.cookies = fmt.Sprintf(".ncov2019selfreport=%s", v.Value)
-		}
-	}
-	htmlBytes, _ := ioutil.ReadAll(resp.Body)
-	fmt.Printf("%+s\n", htmlBytes)
-	fmt.Println(r.cookies)
+	cookies := r.cookier.GetCookies(r.client, uid, password)
+	fmt.Println(cookies)
+	r.cookies = cookies
 }
 
 func (r *ApiReport) GetViewState() {

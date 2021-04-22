@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
 import uvicorn
-import asyncio
 from pyppeteer import launch
+from cookie import Cookies
+
 
 app = FastAPI()
+page = None
 
 async def open_browser():
     """
@@ -19,43 +21,17 @@ async def open_browser():
     return page
     
 
-async def get_cookies(page,uid,password):
-    """
-    Get the cookies.
-    
-    :param page     : Page obj
-    :type page      : pyppeteer.Page
-    :param uid      : user_id
-    :type uid       : str
-    :param password : passwod
-    :type password  : str
-    :return         : cookies
-    :rtype          : Dict[name,value]
-    """
-    # 打开链接
-    await page.goto('https://newsso.shu.edu.cn/login/eyJ0aW1lc3RhbXAiOjE2MTg2MjU2NjkyNjAyMDUzODksInJlc3BvbnNlVHlwZSI6ImNvZGUiLCJjbGllbnRJZCI6IldVSFdmcm50bldZSFpmelE1UXZYVUNWeSIsInNjb3BlIjoiMSIsInJlZGlyZWN0VXJpIjoiaHR0cHM6Ly9zZWxmcmVwb3J0LnNodS5lZHUuY24vTG9naW5TU08uYXNweD9SZXR1cm5Vcmw9JTJmRGVmYXVsdC5hc3B4Iiwic3RhdGUiOiIifQ==') 
 
-    await page.type("#username",uid)
-    await page.type("#password",password)
-    await asyncio.wait([
-        page.click("#submit"),
-        page.waitForNavigation(),
-    ])
-    cookies = await page.cookies()
-    for each_cookie in cookies:
-        pass
-        if each_cookie['name'] == '.ncov2019selfreport':
-            return each_cookie
+@app.middleware("http")
+async def launch_the_browser(request: Request, call_next):
+    """Launch the browser before the request is handled by route."""
+    global page
+    if not page:
+        page = await open_browser()
+    response = await call_next(request)
+    return response
 
 
-# @app.on_event('startup')
-# async def start():
-#     """
-#     Open the browser at the start of the server.
-#     Create the global object page.
-#     """
-#     global page
-#     page = await open_browser()
 
 @app.get("/init")
 async def openBrowser():
@@ -71,7 +47,7 @@ async def openBrowser():
     return "Browser has inited finished."
 
 
-@app.get("/cookies/")
+@app.get("/cookies")
 async def root(id:str,password:str):
     """
     Use the Page to visit the shu_report URL.
@@ -85,7 +61,18 @@ async def root(id:str,password:str):
     :rtype              : dict
     """
     print(id,password)
-    return await get_cookies(page,id,password)
+    return await Cookies(uid=id,password=password,page=page).Read()
+
+@app.get("/test")
+async def test_respone():
+    await page.goto("https://baidu.com")
+    if page:
+        return page.url
+    return "No page"
+
+
+
+
 
 if __name__ == '__main__':
     # uvicorn.run("server:app", host="0.0.0.0", port=8989,reload=True)

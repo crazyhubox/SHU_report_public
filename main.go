@@ -20,10 +20,9 @@ func checkTime(settings parseSetting.Setting) bool {
 	setting_time := settings.RuntimeCron
 	s_t := strings.Split(setting_time, " ")
 	setting_time = fmt.Sprintf("%02s:%02s:00", s_t[1], s_t[0])
-	fmt.Println(currentTime,setting_time)
+	// fmt.Println(currentTime, setting_time)
 	return currentTime == setting_time
 }
-
 
 func sendError(settings parseSetting.Setting) {
 	// 这个函数负责异常处理
@@ -46,7 +45,6 @@ func sendError(settings parseSetting.Setting) {
 	fmt.Println("Send successfully!")
 }
 
-
 func everdayReport(reporter report.Reporter, settings parseSetting.Setting) {
 	defer sendError(settings)
 	for {
@@ -62,13 +60,12 @@ func everdayReport(reporter report.Reporter, settings parseSetting.Setting) {
 	}
 }
 
-
 func main() {
 	settings, err := parseSetting.GetSettings()
 	if err != nil {
 		panic("Error on loading Settings.")
 	}
-	
-	var reporter report.Reporter = new(report.BrowReport)
-	everdayReport(reporter,settings)
+
+	var reporter report.Reporter = report.NewApiReporter()
+	everdayReport(reporter, settings)
 }
