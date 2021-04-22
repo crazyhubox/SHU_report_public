@@ -58,6 +58,8 @@ go run "./main.go"
 ## ios快捷指令来查看服务和报送状态
 ios可以通过快捷指令来快捷查看报送状态
 
+![image](https://github.com/crazyhubox/SHU_report_public/blob/main/static/check.gif)
+
 
 ## 使用方法(旧版本)
 
