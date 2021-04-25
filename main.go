@@ -47,6 +47,8 @@ func sendError(settings parseSetting.Setting) {
 
 func everdayReport(reporter report.Reporter, settings parseSetting.Setting) {
 	defer sendError(settings)
+	reporter.Report(settings.ReportInfo.StuNum, settings.ReportInfo.Password)
+	//启动先报一次
 	for {
 		settings, err := parseSetting.GetSettings()
 		if err != nil {
