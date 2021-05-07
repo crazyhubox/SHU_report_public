@@ -64,11 +64,11 @@ async def root(id:str,password:str):
     return await Cookies(uid=id,password=password,page=page).Read()
 
 @app.get("/test")
-async def test_respone():
-    await page.goto("https://baidu.com")
-    if page:
-        return page.url
-    return "No page"
+async def test_respone(password):
+    c = Cookies(uid="",password=password,page=page)
+    await c.get_key_()
+    return {'data':c.password} 
+
 
 
 

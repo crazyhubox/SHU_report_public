@@ -29,6 +29,7 @@ type remoteCookie struct{}
 func (r *remoteCookie) GetCookies(client *http.Client, user, password string) (cookies string) {
 	url := fmt.Sprintf("http://127.0.0.1:8989/cookies?id=%s&password=%s", user, password)
 	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Add("Connection","keep-alive")//持久化连接, 避免TCP的慢启动
 	if err != nil {
 		log.Fatal(err)
 	}
