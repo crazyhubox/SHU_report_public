@@ -1,13 +1,21 @@
+from abc import ABCMeta, abstractmethod
 from pyppeteer import launch
 import requests
+from pypp_cookie import get_cookies
 
-class Cookies:
+class CookiesGetter(metaclass=ABCMeta):
 
     def __init__(self,uid:str,password:str,page=None) -> None:
         self.page =  page
         self.username  = uid
         self.password = password
-        
+
+    @abstractmethod
+    def Read(self):
+        pass
+
+class Cookies(CookiesGetter):
+
     def post_(self):
         data = {
             'username': self.username,
@@ -34,7 +42,6 @@ class Cookies:
         with open(path, 'r', encoding='utf-8') as f:
             return f.read()
 
-
     async def get_key_(self):
         # page = await open_browser()
         key_file_path = '/Users/tomjack/Desktop/code/Python/SHU_report_public/js_test/jiami.js'
@@ -60,10 +67,7 @@ class Cookies:
         self.page = page
         return page
 
-
-
     async def test_single(self):
-       
         print(self.password)
         page = await self.open_browser()
         password = await self.get_key_(page=page,password=self.password)
@@ -74,6 +78,14 @@ class Cookies:
         if not isinstance(password,str):
             return 
         return self.post_(data=data)
+
+class CookiesPpeteer(CookiesGetter):
+
+    async def Read(self):
+        cookies = await get_cookies(self.page,self.username,self.password)
+        if not cookies:
+            return 'nocookie'
+        return cookies
 
 
 

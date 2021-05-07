@@ -3,7 +3,6 @@ import uvicorn
 from pyppeteer import launch
 from cookie import Cookies
 
-
 app = FastAPI()
 page = None
 
@@ -48,7 +47,7 @@ async def openBrowser():
 
 
 @app.get("/cookies")
-async def root(id:str,password:str):
+async def get_cookies(id:str,password:str):
     """
     Use the Page to visit the shu_report URL.
     GET the user cookies for report.
